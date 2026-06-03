@@ -68,6 +68,7 @@ export default {
     estimated_time: "Estimasi waktu: 15–20 menit",
     thank_you: "Terima kasih sudah makan di sini!",
     back_to_menu: "Kembali ke Menu",
+    download_receipt: "Download Struk",
 
     // Admin / QR Generator
     admin_title: "Dashboard Admin",
@@ -76,6 +77,7 @@ export default {
     generating: "Generating...",
     download: "Download",
     print: "Print",
+    no_order_details: "Tidak ada detail pesanan tersedia.",
     table_status: "Status Meja",
     available: "Tersedia",
     occupied: "Terisi",

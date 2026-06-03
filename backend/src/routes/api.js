@@ -4,6 +4,7 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const router = express.Router();
 
+const { login, verifyToken } = require('../controllers/authController');
 const { getMenu, getTableInfo } = require('../controllers/menuController');
 const { createOrder, getOrder, getAllOrders, updateOrderStatus, confirmCashierPayment } = require('../controllers/orderController');
 const { createQrisPayment, handleMidtransNotification, checkPaymentStatus } = require('../controllers/paymentController');
@@ -31,6 +32,9 @@ const upload = multer({
   }
 });
 
+// Auth routes
+router.post('/auth/login', login);
+
 // Menu routes
 router.get('/menu', getMenu);
 router.get('/tables/:tableNumber', getTableInfo);
@@ -53,16 +57,16 @@ router.get('/qr/table/:tableNumber', getTableQR);
 router.get('/qr/all', getAllTablesQR);
 
 // Admin - Categories
-router.get('/admin/categories', getCategories);
-router.post('/admin/categories', createCategory);
-router.put('/admin/categories/:id', updateCategory);
-router.delete('/admin/categories/:id', deleteCategory);
+router.get('/admin/categories', verifyToken, getCategories);
+router.post('/admin/categories', verifyToken, createCategory);
+router.put('/admin/categories/:id', verifyToken, updateCategory);
+router.delete('/admin/categories/:id', verifyToken, deleteCategory);
 
 // Admin - Menu Items
-router.get('/admin/menu-items', getAllMenuItems);
-router.post('/admin/menu-items', upload.single('image'), createMenuItem);
-router.put('/admin/menu-items/:id', upload.single('image'), updateMenuItem);
-router.delete('/admin/menu-items/:id', deleteMenuItem);
-router.patch('/admin/menu-items/:id/toggle', toggleAvailable);
+router.get('/admin/menu-items', verifyToken, getAllMenuItems);
+router.post('/admin/menu-items', verifyToken, upload.single('image'), createMenuItem);
+router.put('/admin/menu-items/:id', verifyToken, upload.single('image'), updateMenuItem);
+router.delete('/admin/menu-items/:id', verifyToken, deleteMenuItem);
+router.patch('/admin/menu-items/:id/toggle', verifyToken, toggleAvailable);
 
 module.exports = router;

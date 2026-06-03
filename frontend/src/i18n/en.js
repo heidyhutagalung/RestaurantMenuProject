@@ -61,6 +61,7 @@ export default {
     estimated_time: "Estimated time: 15–20 minutes",
     thank_you: "Thank you for dining with us!",
     back_to_menu: "Back to Menu",
+    download_receipt: "Download Receipt",
 
     admin_title: "Admin Dashboard",
     qr_manager: "QR Code Manager",
@@ -68,6 +69,7 @@ export default {
     generating: "Generating...",
     download: "Download",
     print: "Print",
+    no_order_details: "No order details available.",
     table_status: "Table Status",
     available: "Available",
     occupied: "Occupied",

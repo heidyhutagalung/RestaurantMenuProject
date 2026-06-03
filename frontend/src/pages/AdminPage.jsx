@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { QrCode, LayoutDashboard, UtensilsCrossed, Download, RefreshCw, Plus, Pencil, Trash2, Eye, EyeOff, X, Upload, ChevronDown } from 'lucide-react';
+import { QrCode, LayoutDashboard, UtensilsCrossed, Download, RefreshCw, Plus, Pencil, Trash2, Eye, EyeOff, X, Upload, ChevronDown, LogOut } from 'lucide-react';
 import { qrApi, orderApi, adminApi } from '../utils/api';
 import { formatRupiah, formatDate } from '../utils/format';
 
@@ -190,6 +191,7 @@ function MenuItemModal({ item, categories, onClose, onSaved }) {
 
 // ─── Main AdminPage ─────────────────────────────────────────────────────────────
 export default function AdminPage() {
+  const navigate = useNavigate();
   const [tab, setTab] = useState('menu');
   const [categories, setCategories] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
@@ -256,6 +258,17 @@ export default function AdminPage() {
         <div className="relative px-4 pt-10 pb-5">
           <p className="text-dark-300 text-xs uppercase tracking-widest mb-1">Dashboard</p>
           <h1 className="font-display text-2xl font-bold text-white">Restoran Nusantara</h1>
+          <div className="absolute right-4 top-4 flex items-center gap-2">
+            <button onClick={() => navigate('/admin/history')} className="btn-secondary">Riwayat Pesanan</button>
+            <button 
+              onClick={() => {
+                localStorage.removeItem('admin_token');
+                navigate('/login');
+              }} 
+              className="flex items-center gap-1.5 px-3 py-2 bg-red-500/20 text-red-400 text-xs font-semibold rounded-xl hover:bg-red-500/30 transition-colors">
+              <LogOut size={14} /> Logout
+            </button>
+          </div>
         </div>
       </div>
 

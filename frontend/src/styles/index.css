@@ -61,3 +61,68 @@
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
+
+@media print {
+  body {
+    background: #fff !important;
+    color: #111 !important;
+  }
+  .card-dark {
+    background: #fff !important;
+    border-color: #111 !important;
+    color: #111 !important;
+    box-shadow: none !important;
+  }
+  .btn-primary,
+  .no-print,
+  .print-hidden,
+  button,
+  .btn-secondary {
+    display: none !important;
+  }
+  .text-white,
+  .text-dark-300,
+  .text-dark-400,
+  .text-dark-500,
+  .text-dark-600,
+  .text-dark-700,
+  .text-dark-800,
+  .text-dark-900,
+  .bg-dark-900,
+  .bg-dark-800,
+  .bg-dark-700,
+  .bg-dark-600,
+  .bg-brand-500\/20,
+  .bg-brand-500\/8,
+  .bg-brand-500\/5,
+  .border-dark-600,
+  .border-dark-700,
+  .border-dark-500,
+  .border-dark-300 {
+    color: #111 !important;
+    background: transparent !important;
+    border-color: #111 !important;
+  }
+  .shadow-lg,
+  .shadow-brand-500\/25,
+  .shadow-none {
+    box-shadow: none !important;
+  }
+  .w-96,
+  .max-w-md,
+  .max-w-xs {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .rounded-2xl,
+  .rounded-xl,
+  .rounded-full {
+    border-radius: 0.5rem !important;
+  }
+  .min-h-screen {
+    min-height: auto !important;
+  }
+  .overflow-hidden {
+    overflow: visible !important;
+  }
+}

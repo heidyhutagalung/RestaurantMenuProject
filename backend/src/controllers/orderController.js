@@ -1,5 +1,13 @@
 const { getDb } = require('../config/database');
 
+// Helper untuk mendapatkan waktu WIB (UTC+7)
+function getWIBDateTime() {
+  const now = new Date();
+  const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
+  const wibTime = new Date(utcTime + (7 * 3600000)); // UTC+7
+  return wibTime.toISOString().slice(0, 19).replace('T', ' ');
+}
+
 function generateOrderNumber() {
   const d = new Date().toISOString().slice(2,10).replace(/-/g,'');
   return `ORD-${d}-${Math.floor(Math.random()*9000)+1000}`;
@@ -25,11 +33,12 @@ function createOrder(req, res) {
     const tax = Math.round(subtotal * 0.1);
     const total = subtotal + tax;
     const order_number = generateOrderNumber();
+    const nowWIB = getWIBDateTime();
 
     const { lastInsertRowid: orderId } = db.run2(
-      `INSERT INTO orders (order_number,table_number,payment_method,subtotal,tax,total,customer_notes,status,payment_status)
-       VALUES (?,?,?,?,?,?,?,'pending','unpaid')`,
-      [order_number, table_number, payment_method, subtotal, tax, total, customer_notes || null]
+      `INSERT INTO orders (order_number,table_number,payment_method,subtotal,tax,total,customer_notes,status,payment_status,created_at,updated_at)
+       VALUES (?,?,?,?,?,?,?,'pending','unpaid',?,?)`,
+      [order_number, table_number, payment_method, subtotal, tax, total, customer_notes || null, nowWIB, nowWIB]
     );
 
     for (const item of enriched) {
@@ -69,11 +78,12 @@ function getOrder(req, res) {
 function getAllOrders(req, res) {
   try {
     const db = getDb();
-    const { status, date } = req.query;
+    const { status, date, table } = req.query;
     let sql = 'SELECT * FROM orders WHERE 1=1';
     const params = [];
     if (status) { sql += ' AND status = ?'; params.push(status); }
     if (date)   { sql += " AND DATE(created_at) = ?"; params.push(date); }
+    if (table)  { sql += ' AND table_number = ?'; params.push(parseInt(table)); }
     sql += ' ORDER BY created_at DESC LIMIT 100';
     res.json({ success: true, data: db.all2(sql, params) });
   } catch (err) {
@@ -88,8 +98,9 @@ function updateOrderStatus(req, res) {
     if (!valid.includes(req.body.status))
       return res.status(400).json({ success: false, message: 'Invalid status' });
 
-    db.run2('UPDATE orders SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE order_number = ?',
-      [req.body.status, req.params.orderNumber]);
+    const nowWIB = getWIBDateTime();
+    db.run2('UPDATE orders SET status = ?, updated_at = ? WHERE order_number = ?',
+      [req.body.status, nowWIB, req.params.orderNumber]);
 
     const order = db.get2('SELECT * FROM orders WHERE order_number = ?', [req.params.orderNumber]);
     const io = req.app.get('io');
@@ -118,9 +129,10 @@ function confirmCashierPayment(req, res) {
       return res.status(400).json({ success: false, message: 'Pembayaran sudah diproses' });
     }
 
+    const nowWIB = getWIBDateTime();
     db.run2(
-      "UPDATE orders SET payment_status='paid', status='confirmed', updated_at=CURRENT_TIMESTAMP WHERE order_number=?",
-      [orderNumber]
+      "UPDATE orders SET payment_status='paid', status='confirmed', updated_at=? WHERE order_number=?",
+      [nowWIB, orderNumber]
     );
 
     const updatedOrder = db.get2('SELECT * FROM orders WHERE order_number = ?', [orderNumber]);

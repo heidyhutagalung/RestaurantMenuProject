@@ -57,7 +57,9 @@ export default function MenuPage() {
               </h1>
               <p className="text-dark-300 text-sm mt-1">{t('welcome_sub')}</p>
             </div>
-            <LangSwitcher />
+            <div className="flex items-center gap-2">
+              <LangSwitcher />
+            </div>
           </div>
 
           {/* Search */}

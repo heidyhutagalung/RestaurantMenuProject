@@ -2,6 +2,29 @@ import axios from 'axios';
 
 const api = axios.create({ baseURL: '/api', timeout: 15000 });
 
+// Interceptor untuk tambahkan token ke setiap request
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('admin_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+}, (error) => {
+  return Promise.reject(error);
+});
+
+// Interceptor untuk handle 401 (token expired/invalid)
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('admin_token');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const menuApi = {
   getMenu: (lang = 'id') => api.get(`/menu?lang=${lang}`),
   getTableInfo: (n) => api.get(`/tables/${n}`),

@@ -186,7 +186,7 @@ export default function QrisPaymentPage() {
               <p className="font-display text-3xl font-bold text-brand-400 font-mono mb-6">
                 {formatRupiah(payment?.total || order.total)}
               </p>
-              {!payment?.qr_data_url && (
+              {!payment?.qr_data_url ? (
                 <button
                   onClick={openSnap}
                   disabled={!snapLoaded}
@@ -197,6 +197,24 @@ export default function QrisPaymentPage() {
                       <RefreshCw size={14} className="animate-spin" /> Memuat...
                     </span>
                   )}
+                </button>
+              ) : (
+                <button
+                  onClick={async () => {
+                    try {
+                      const res = await orderApi.confirmCashier(order.order_number);
+                      if (res.data?.success) {
+                        setPaymentStatus('paid');
+                        clearCart();
+                        navigate('/success', { state: { order } });
+                      }
+                    } catch (error) {
+                      console.error('Manual confirm failed', error);
+                    }
+                  }}
+                  className="btn-primary mb-4"
+                >
+                  Konfirmasi Pembayaran Manual
                 </button>
               )}
               <div className="flex items-center justify-center gap-2 text-dark-400 text-xs">
